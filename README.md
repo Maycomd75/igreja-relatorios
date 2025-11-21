@@ -71,7 +71,7 @@ Este guia serve para líderes e pastores, mostrando como **enviar relatórios** 
 - Evite relatórios duplicados.  
 - Atualize o painel periodicamente.  
 - Cadastre novas células e líderes quando necessário.  
-- Em caso de dúvida, contate o administrador: **admin@igreja-relatorios.com**
+- Em caso de dúvida, contate o administrador: Carol 
 
 ---
 
@@ -101,4 +101,5 @@ Após seguir este treinamento, você estará apto a:
 - Garantir que os dados das células estejam sempre atualizados.  
 
 **Desenvolvido por: Igreja Quadrangular Jardim Bela Vista 
-**Data:21 2025
+
+Data:21 2025
