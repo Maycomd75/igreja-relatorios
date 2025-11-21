@@ -303,6 +303,8 @@
 </div>
 
 <script>
+const API_URL = "https://igreja-relatorios.onrender.com"; // atualizado
+
 /* ============================================================
     CONTROLE DE ABAS
 ============================================================ */
@@ -311,7 +313,9 @@ function mostrar(secao) {
     document.getElementById(secao).classList.add('active-section');
 
     document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-    document.getElementById("btn" + secao.charAt(0).toUpperCase() + secao.slice(1)).classList.add('active');
+    const btnId = "btn" + secao.charAt(0).toUpperCase() + secao.slice(1);
+    const btn = document.getElementById(btnId);
+    if (btn) btn.classList.add('active');
 }
 
 /* ============================================================
@@ -320,15 +324,19 @@ function mostrar(secao) {
 let relatorios = [];
 
 async function carregarRelatorios() {
-    const req = await fetch("http://localhost:3000/api/relatorios");
-    relatorios = await req.json();
+    try {
+        const req = await fetch(`${API_URL}/api/relatorios`);
+        relatorios = await req.json();
 
-    // 🔥 MOSTRAR OS MAIS NOVOS NO TOPO
-    relatorios.sort((a, b) => new Date(b.data) - new Date(a.data));
+        relatorios.sort((a, b) => new Date(b.data) - new Date(a.data));
 
-    renderTabela(relatorios);
-    preencherFiltros();
-    atualizarDashboard();
+        renderTabela(relatorios);
+        preencherFiltros();
+        atualizarDashboard();
+    } catch (erro) {
+        console.error("Erro ao carregar relatórios:", erro);
+        alert("Erro ao carregar relatórios do servidor.");
+    }
 }
 carregarRelatorios();
 
@@ -459,7 +467,6 @@ function aplicarFiltro() {
     const dataFim = document.getElementById("filtroDataFim").value;
 
     const lista = relatorios.filter(r => {
-
         let dataRelatorio = new Date(r.data);
         let okData = true;
 
@@ -557,9 +564,7 @@ atualizarLideres();
 
 function addLider() {
     const nome = document.getElementById("nomeLider").value.trim();
-    if (!nome) return alert("Digite o nome!");
-
-    listaLideresStorage.push(nome);
+    if (!nome) return alert("Digite o nome!");listaLideresStorage.push(nome);
     localStorage.setItem("lideres", JSON.stringify(listaLideresStorage));
 
     atualizarLideres();
