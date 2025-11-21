@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel do Pastor</title>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+    }
+
+    /* ====== SIDEBAR ====== */
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        background: #0044ff;
+        color: white;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .sidebar img {
+        width: 125px;
+        margin: 0 auto -30px;
+        display: block;
+        filter: drop-shadow(0 0 4px rgba(0,0,0,0.4));
+    }
+
+    .sidebar h2 {
+        margin-top: 5px;
+        font-size: 20px;
+        letter-spacing: 0.5px;
+        font-weight: bold;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 12px;
+        color: white;
+        text-decoration: none;
+        margin: 8px 0;
+        font-size: 17px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .sidebar a:hover, .active {
+        background: #0033cc !important;
+    }
+
+    /* ====== CONTENT ====== */
+    .content {
+        margin-left: 260px;
+        padding: 20px;
+    }
+
+    .section {
+        display: none;
+    }
+
+    .section.active-section {
+        display: block;
+    }
+
+    .dashboard-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        border-left: 5px solid #0044ff;
+        border-radius: 8px;
+        width: 230px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.15);
+    }
+
+    .card h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #444;
+    }
+
+    .card p {
+        font-size: 28px;
+        margin: 10px 0 0 0;
+        font-weight: bold;
+        color: #0044ff;
+    }
+
+    .chart-container {
+        background: white;
+        padding: 20px;
+        margin-top: 25px;
+        border-radius: 8px;
+        border-left: 5px solid #0044ff;
+    }
+
+    table {
+        width: 100%;
+        background: white;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background: #0044ff;
+        color: white;
+    }
+
+    button {
+        padding: 8px 10px;
+        background: #0044ff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #0033cc;
+    }
+
+    input, select {
+        padding: 8px;
+        width: 220px;
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 10px;
+    }
+
+    .filter-box, .card-box {
+        background: white;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border-left: 5px solid #0044ff;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-height: 90vh;
+        width: 90%;
+        max-width: 600px;
+        overflow-y: auto;
+    }
+</style>
+</head>
+<body>
+
+<!-- MENU LATERAL -->
+<div class="sidebar">
+    <img src="img/logo-ieq.png" alt="Logo IEQ">
+    <h2>PAINEL PASTOR DAWEGH</h2>
+
+    <a onclick="mostrar('dashboard')" id="btnDashboard" class="active">📊 Dashboard</a>
+    <a onclick="mostrar('relatorios')" id="btnRelatorios">📃 Relatórios</a>
+    <a onclick="mostrar('celulas')" id="btnCelulas">👥 Células</a>
+    <a onclick="mostrar('lideres')" id="btnLideres">🙋‍♂️ Líderes</a>
+    <a onclick="mostrar('sair')">⛔ Sair</a>
+</div>
+
+<div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="section active-section" id="dashboard">
+        <h1>Dashboard</h1>
+
+        <div class="dashboard-row">
+            <div class="card"><h3>Total de Células</h3><p id="cardCelulas">0</p></div>
+            <div class="card"><h3>Total de Líderes</h3><p id="cardLideres">0</p></div>
+            <div class="card"><h3>Total de Relatórios</h3><p id="cardRelatorios">0</p></div>
+            <div class="card"><h3>Total de Membros no Ano</h3><p id="cardMembros">0</p></div>
+        </div>
+
+        <div class="chart-container">
+            <h3>📈 Desempenho Anual das Células</h3>
+            <canvas id="graficoAno"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>📆 Relatórios por Mês</h3>
+            <canvas id="graficoMes"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>📅 Relatórios por Dia</h3>
+            <canvas id="graficoDia"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>📊 Relatórios por Ano</h3>
+            <canvas id="graficoAnoTotal"></canvas>
+        </div>
+    </div>
+
+    <!-- RELATÓRIOS -->
+    <div class="section" id="relatorios">
+        <h1>Relatórios das Células</h1>
+
+        <div class="filter-box">
+            <label>Célula:</label>
+            <select id="filtroCelula"></select>
+
+            <label>Líder:</label>
+            <select id="filtroLider"></select>
+
+            <label>Data Inicial:</label>
+            <input type="date" id="filtroDataInicio">
+
+            <label>Data Final:</label>
+            <input type="date" id="filtroDataFim">
+
+            <button onclick="aplicarFiltro()">Filtrar</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Célula</th>
+                    <th>Líder</th>
+                    <th>Data</th>
+                    <th>Total Pessoas</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaRelatorios"></tbody>
+        </table>
+    </div>
+
+    <!-- CÉLULAS -->
+    <div class="section" id="celulas">
+        <h1>Cadastrar Células</h1>
+
+        <div class="card-box">
+            <input type="text" id="nomeCelula" placeholder="Nome da Célula">
+            <button onclick="addCelula()">Adicionar</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Nome da Célula</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="listaCelulas"></tbody>
+        </table>
+    </div>
+
+    <!-- LÍDERES -->
+    <div class="section" id="lideres">
+        <h1>Cadastro de Líderes</h1>
+
+        <div class="card-box">
+            <input type="text" id="nomeLider" placeholder="Nome do Líder">
+            <button onclick="addLider()">Adicionar</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Nome do Líder</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="listaLideres"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modalDetalhes">
+    <div class="modal-content" id="modalConteudo"></div>
+</div>
+
+<script>
+/* ============================================================
+    CONTROLE DE ABAS
+============================================================ */
+function mostrar(secao) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+    document.getElementById(secao).classList.add('active-section');
+
+    document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+    document.getElementById("btn" + secao.charAt(0).toUpperCase() + secao.slice(1)).classList.add('active');
+}
+
+/* ============================================================
+    CARREGAR RELATÓRIOS
+============================================================ */
+let relatorios = [];
+
+async function carregarRelatorios() {
+    const req = await fetch("http://localhost:3000/api/relatorios");
+    relatorios = await req.json();
+
+    // 🔥 MOSTRAR OS MAIS NOVOS NO TOPO
+    relatorios.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    renderTabela(relatorios);
+    preencherFiltros();
+    atualizarDashboard();
+}
+carregarRelatorios();
+
+/* ============================================================
+    DASHBOARD
+============================================================ */
+function atualizarDashboard() {
+    let celulas = JSON.parse(localStorage.getItem("celulas") || "[]");
+    let lideres = JSON.parse(localStorage.getItem("lideres") || "[]");
+
+    document.getElementById("cardCelulas").innerText = celulas.length;
+    document.getElementById("cardLideres").innerText = lideres.length;
+    document.getElementById("cardRelatorios").innerText = relatorios.length;
+
+    let totalMembros = relatorios.reduce((s, r) => s + Number(r.total_pessoas), 0);
+    document.getElementById("cardMembros").innerText = totalMembros;
+
+    gerarGraficos();
+}
+
+/* ============================================================
+    GRÁFICOS
+============================================================ */
+function gerarGraficos() {
+
+    const meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+
+    let porMes = Array(12).fill(0);
+    let porDia = {};
+    let porAno = {};
+
+    relatorios.forEach(r => {
+        let d = new Date(r.data);
+        let mes = d.getMonth();
+        let dia = r.data;
+        let ano = d.getFullYear();
+
+        porMes[mes]++;
+        porDia[dia] = (porDia[dia] || 0) + 1;
+        porAno[ano] = (porAno[ano] || 0) + 1;
+    });
+
+    new Chart(document.getElementById("graficoMes"), {
+        type: "bar",
+        data: {
+            labels: meses,
+            datasets: [{
+                label: "Relatórios enviados",
+                data: porMes,
+                backgroundColor: "#0044ff"
+            }]
+        }
+    });
+
+    new Chart(document.getElementById("graficoDia"), {
+        type: "line",
+        data: {
+            labels: Object.keys(porDia),
+            datasets: [{
+                label: "Por dia",
+                data: Object.values(porDia),
+                borderColor: "#0044ff",
+                backgroundColor: "#0044ff"
+            }]
+        }
+    });
+
+    new Chart(document.getElementById("graficoAnoTotal"), {
+        type: "bar",
+        data: {
+            labels: Object.keys(porAno),
+            datasets: [{
+                label: "Total por ano",
+                data: Object.values(porAno),
+                backgroundColor: "#0044ff"
+            }]
+        }
+    });
+
+    new Chart(document.getElementById("graficoAno"), {
+        type: "line",
+        data: {
+            labels: meses,
+            datasets: [{
+                label: "Desempenho anual",
+                data: porMes,
+                borderColor: "#0044ff",
+                backgroundColor: "#0044ff"
+            }]
+        }
+    });
+}
+
+/* ============================================================
+    FILTROS + TABELA
+============================================================ */
+function preencherFiltros() {
+    const celulas = [...new Set(relatorios.map(r => r.celula))];
+    const lideres = [...new Set(relatorios.map(r => r.lider))];
+
+    document.getElementById("filtroCelula").innerHTML =
+        `<option value="">Todas</option>` +
+        celulas.map(c => `<option>${c}</option>`).join("");
+
+    document.getElementById("filtroLider").innerHTML =
+        `<option value="">Todos</option>` +
+        lideres.map(l => `<option>${l}</option>`).join("");
+}
+
+function renderTabela(lista) {
+    document.getElementById("tabelaRelatorios").innerHTML =
+        lista.map((r, i) => `
+            <tr>
+                <td>${r.celula}</td>
+                <td>${r.lider}</td>
+                <td>${r.data}</td>
+                <td>${r.total_pessoas}</td>
+                <td><button onclick="verDetalhes(${i})">Ver</button></td>
+            </tr>
+        `).join("");
+}
+
+function aplicarFiltro() {
+    const celula = document.getElementById("filtroCelula").value;
+    const lider = document.getElementById("filtroLider").value;
+
+    const dataInicio = document.getElementById("filtroDataInicio").value;
+    const dataFim = document.getElementById("filtroDataFim").value;
+
+    const lista = relatorios.filter(r => {
+
+        let dataRelatorio = new Date(r.data);
+        let okData = true;
+
+        if (dataInicio) okData = dataRelatorio >= new Date(dataInicio);
+        if (dataFim) okData = okData && dataRelatorio <= new Date(dataFim);
+
+        return (
+            (celula === "" || r.celula === celula) &&
+            (lider === "" || r.lider === lider) &&
+            okData
+        );
+    });
+
+    renderTabela(lista);
+}
+
+function verDetalhes(i) {
+    const r = relatorios[i];
+
+    const membrosHTML = r.membros.length
+        ? r.membros.map((m, i) => `<li>${i + 1}. ${m}</li>`).join("")
+        : "<i>Nenhum membro informado</i>";
+
+    document.getElementById("modalConteudo").innerHTML = `
+        <h2>${r.celula}</h2>
+        <p><b>Líder:</b> ${r.lider}</p>
+        <p><b>Anfitrião:</b> ${r.anfitriao}</p>
+        <p><b>Data:</b> ${r.data}</p>
+
+        <h3>Presentes</h3>
+        <ul>${membrosHTML}</ul>
+
+        <p><b>Total pessoas:</b> ${r.total_pessoas}</p>
+        <p><b>Aceitaram Jesus:</b> ${r.aceitaram}</p>
+        <p><b>Batismo:</b> ${r.batismo}</p>
+
+        <button onclick="fechar()">Fechar</button>
+    `;
+
+    document.getElementById("modalDetalhes").style.display = "flex";
+}
+
+function fechar() {
+    document.getElementById("modalDetalhes").style.display = "none";
+}
+
+/* ============================================================
+    CÉLULAS
+============================================================ */
+let listaCelulasStorage = JSON.parse(localStorage.getItem("celulas") || "[]");
+
+function atualizarCelulas() {
+    document.getElementById("listaCelulas").innerHTML =
+        listaCelulasStorage.map((c, i) => `
+            <tr>
+                <td>${c}</td>
+                <td><button onclick="delCelula(${i})">Excluir</button></td>
+            </tr>
+        `).join("");
+}
+atualizarCelulas();
+
+function addCelula() {
+    const nome = document.getElementById("nomeCelula").value.trim();
+    if (!nome) return alert("Digite o nome!");
+
+    listaCelulasStorage.push(nome);
+    localStorage.setItem("celulas", JSON.stringify(listaCelulasStorage));
+
+    atualizarCelulas();
+    document.getElementById("nomeCelula").value = "";
+}
+
+function delCelula(i) {
+    listaCelulasStorage.splice(i, 1);
+    localStorage.setItem("celulas", JSON.stringify(listaCelulasStorage));
+    atualizarCelulas();
+}
+
+/* ============================================================
+    LÍDERES
+============================================================ */
+let listaLideresStorage = JSON.parse(localStorage.getItem("lideres") || "[]");
+
+function atualizarLideres() {
+    document.getElementById("listaLideres").innerHTML =
+        listaLideresStorage.map((l, i) => `
+            <tr>
+                <td>${l}</td>
+                <td><button onclick="delLider(${i})">Excluir</button></td>
+            </tr>
+        `).join("");
+}
+atualizarLideres();
+
+function addLider() {
+    const nome = document.getElementById("nomeLider").value.trim();
+    if (!nome) return alert("Digite o nome!");
+
+    listaLideresStorage.push(nome);
+    localStorage.setItem("lideres", JSON.stringify(listaLideresStorage));
+
+    atualizarLideres();
+    document.getElementById("nomeLider").value = "";
+}
+
+function delLider(i) {
+    listaLideresStorage.splice(i, 1);
+    localStorage.setItem("lideres", JSON.stringify(listaLideresStorage));
+    atualizarLideres();
+}
+</script>
+</body>
+</html>

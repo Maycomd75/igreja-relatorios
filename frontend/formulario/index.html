@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Célula</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title-bar">RELATÓRIO DE CÉLULA</div>
+
+    <form id="formRelatorio">
+
+        <!-- Dados iniciais -->
+        <label>Nome do Líder:</label>
+        <input type="text" name="lider" required>
+
+        <label>Anfitrião:</label>
+        <input type="text" name="anfitriao" required>
+
+        <label>Nome da Célula:</label>
+        <input type="text" name="celula" required>
+
+        <label>Data do Encontro:</label>
+        <input type="date" name="data" required>
+
+        <!-- Membros -->
+        <div class="section-title">PARTICIPAÇÃO – MEMBROS PRESENTES NA CÉLULA</div>
+
+        <div class="members-grid">
+            <input type="text" placeholder="1 -" name="m1">
+           
+            <input type="text" placeholder="2 -" name="m2">
+            
+            <input type="text" placeholder="3 -" name="m3">
+            
+            <input type="text" placeholder="4 -" name="m4">
+            
+            <input type="text" placeholder="5 -" name="m5">
+            
+            <input type="text" placeholder="6 -" name="m6">
+           
+            <input type="text" placeholder="7 -" name="m7">
+           
+            <input type="text" placeholder="8 -" name="m8">
+           
+            <input type="text" placeholder="9 -" name="m9">
+           
+            <input type="text" placeholder="10 -" name="m10">
+            
+            <input type="text" placeholder="11 -" name="m11">
+            
+            <input type="text" placeholder="12 -" name="m12">
+            
+            <input type="text" placeholder="13 -" name="m13">
+            
+            <input type="text" placeholder="14 -" name="m14">
+            
+            <input type="text" placeholder="15 -" name="m15">
+            
+            <input type="text" disabled>
+        </div>
+
+        <!-- Quantidades -->
+        <div class="line-input">
+            <div>
+                <label>Visitantes:</label>
+                <input type="number" name="visitantes">
+            </div>
+
+            <div>
+                <label>Crianças:</label>
+                <input type="number" name="criancas">
+            </div>
+
+            <div>
+                <label>Total de Pessoas:</label>
+                <input type="number" name="total_pessoas">
+            </div>
+        </div>
+
+        <div class="section-title">DECISÕES E AÇÕES ESPIRITUAIS</div>
+
+        <label>Aceitaram Jesus:</label>
+        <input type="text" name="aceitaram">
+
+        <label>Desejam ser Batizados:</label>
+        <input type="text" name="batismo">
+
+        <div class="section-title">ENVOLVIMENTO NA IGREJA (DOMINGO)</div>
+
+        <label>Total:</label>
+        <input type="number" name="envolvimento">
+
+        <button type="submit">Enviar Relatório</button>
+
+    </form>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
