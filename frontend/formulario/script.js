@@ -1,3 +1,6 @@
+// URL pública do Render
+const API_URL = "https://igreja-relatorios.onrender.com";
+
 // Enviar relatório para o backend
 document.getElementById("formRelatorio").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -14,7 +17,7 @@ document.getElementById("formRelatorio").addEventListener("submit", async (e) =>
     dados.membros = membros;
 
     try {
-        const req = await fetch("http://localhost:3000/api/relatorio", {
+        const req = await fetch(`${API_URL}/api/relatorio`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
